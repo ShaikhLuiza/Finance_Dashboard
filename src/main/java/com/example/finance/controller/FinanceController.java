@@ -51,9 +51,15 @@ public class FinanceController {
         return financeService.filterByCategory(category);
     }
 
-    // --- DASHBOARD ENDPOINT (Requirement #3) ---
+    // --- DASHBOARD & ANALYTICS ENDPOINTS ---
 
-    // 6. Get the math summaries
+    // 6. Get Expense Totals by Category for the Bar Chart
+    @GetMapping("/analytics/category")
+    public ResponseEntity<List<Map<String, Object>>> getCategoryAnalytics() {
+        return ResponseEntity.ok(financeService.getExpenseTotalsByCategory());
+    }
+
+    // 7. Get the math summaries
     @GetMapping("/summary")
     public ResponseEntity<Map<String, Object>> getSummary() {
         return ResponseEntity.ok(financeService.getDashboardSummary());

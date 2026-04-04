@@ -41,6 +41,12 @@ public class FinanceService {
         return repository.save(existing);
     }
 
+    // --- ANALYTICS ---
+    public List<Map<String, Object>> getExpenseTotalsByCategory() {
+        // Changed this to use 'repository' so it matches your Autowired variable!
+        return repository.findExpenseTotalsByCategory();
+    }
+
     public void deleteRecord(Long id) {
         repository.deleteById(id);
     }
