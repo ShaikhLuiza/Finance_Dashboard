@@ -50,7 +50,7 @@ public class SecurityConfig {
     public UserDetailsService userDetailsService() {
         UserDetails viewer = User.builder()
                 .username("viewer")
-                .password("{noop}iew-Only-Pass-00")
+                .password("{noop}View-Only-Pass-00")
                 .roles("VIEWER")
                 .build();
 
