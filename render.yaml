@@ -1,9 +1,0 @@
-services:
-  - type: web
-    name: finance-dashboard
-    env: java
-    buildCommand: ./mvnw clean install -DskipTests
-    startCommand: java -jar target/*.jar
-    envVars:
-      - key: JAVA_VERSION
-        value: 17 # Change this to 21 if you built your app on Java 21!
