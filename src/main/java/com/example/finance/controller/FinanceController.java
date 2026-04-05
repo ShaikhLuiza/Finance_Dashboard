@@ -4,10 +4,13 @@ import com.example.finance.model.FinancialRecord;
 import com.example.finance.service.FinanceService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.userdetails.User;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/finance")
@@ -15,6 +18,10 @@ public class FinanceController {
 
     @Autowired
     private FinanceService financeService;
+
+    // 🆕 Inject the SessionRegistry from SecurityConfig
+    @Autowired
+    private SessionRegistry sessionRegistry;
 
     // --- CRUD OPERATIONS ---
 
@@ -65,4 +72,18 @@ public class FinanceController {
         return ResponseEntity.ok(financeService.getDashboardSummary());
     }
 
+    // 🆕 8. Get active users currently logged into the system
+    @GetMapping("/active-users")
+    public ResponseEntity<List<String>> getActiveUsers() {
+        List<String> activeUsers = sessionRegistry.getAllPrincipals().stream()
+                .filter(principal -> principal instanceof User)
+                .map(principal -> {
+                    User user = (User) principal;
+                    // Formats as: "admin (ROLE_ADMIN)" or "viewer (ROLE_VIEWER)"
+                    return user.getUsername() + " (" + user.getAuthorities().toString().replaceAll("[\\[\\]]", "") + ")";
+                })
+                .collect(Collectors.toList());
+
+        return ResponseEntity.ok(activeUsers);
+    }
 }

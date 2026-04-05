@@ -136,6 +136,9 @@
         .btn-analysis { background-color: var(--primary); }
         .btn-analysis:hover { background-color: #0f172a; }
 
+        .btn-users { background-color: var(--info); }
+        .btn-users:hover { background-color: #0369a1; }
+
         /* 🔍 FILTER SECTION STYLING */
         .table-controls {
             display: flex;
@@ -384,6 +387,34 @@
             color: var(--text-main);
             font-weight: 600;
         }
+
+        /* 👥 ACTIVE USERS LIST STYLING */
+        .user-list {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+
+        .user-list li {
+            padding: 10px 14px;
+            border-bottom: 1px solid var(--border-color);
+            font-weight: 600;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .user-list li:last-child {
+            border-bottom: none;
+        }
+
+        .pulse-indicator {
+            width: 8px;
+            height: 8px;
+            background-color: var(--success);
+            border-radius: 50%;
+            display: inline-block;
+        }
     </style>
 </head>
 <body>
@@ -405,6 +436,10 @@
         </div>
 
         <div class="action-btn-group">
+            <button class="action-btn btn-users" sec:authorize="hasRole('ADMIN')" onclick="openUsersModal()">
+                <span>👥</span> Active Viewers
+            </button>
+
             <button class="action-btn btn-add" sec:authorize="hasRole('ADMIN')" onclick="openAddModal()">
                 <span>➕</span> Add Record
             </button>
@@ -544,6 +579,18 @@
     </div>
 </div>
 
+<div id="usersModal" class="modal">
+    <div class="modal-content">
+        <span class="close-btn" onclick="closeUsersModal()">&times;</span>
+        <h3>Live Active Viewers</h3>
+        <p style="font-size: 0.9rem; color: var(--text-muted); margin-top: -10px; margin-bottom: 20px;">Users currently logged into the system.</p>
+
+        <ul id="activeUsersList" class="user-list">
+            <li style="color: var(--text-muted); justify-content: center;">Loading active users...</li>
+        </ul>
+    </div>
+</div>
+
 <script>
     // JS TO POPULATE AND EXECUTE FILTERING
     document.addEventListener("DOMContentLoaded", function() {
@@ -604,6 +651,37 @@
 
     function openAddModal() { document.getElementById("addModal").style.display = "flex"; }
     function closeAddModal() { document.getElementById("addModal").style.display = "none"; }
+
+    // 🆕 ACTIVE USERS MODAL FUNCTIONS
+    function openUsersModal() {
+        document.getElementById("usersModal").style.display = "flex";
+        fetchActiveUsers();
+    }
+    function closeUsersModal() { document.getElementById("usersModal").style.display = "none"; }
+
+    function fetchActiveUsers() {
+        const usersListElement = document.getElementById("activeUsersList");
+
+        fetch('/api/finance/active-users')
+            .then(response => response.json())
+            .then(users => {
+                usersListElement.innerHTML = ''; // Clear loading state
+
+                if (users.length === 0) {
+                    usersListElement.innerHTML = '<li style="color: var(--text-muted); justify-content: center;">No users found active.</li>';
+                    return;
+                }
+
+                users.forEach(userString => {
+                    const li = document.createElement('li');
+                    li.innerHTML = `<span>${userString}</span><span class="pulse-indicator"></span>`;
+                    usersListElement.appendChild(li);
+                });
+            })
+            .catch(error => {
+                usersListElement.innerHTML = `<li style="color: var(--danger); justify-content: center;">Failed to load: ${error.message}</li>`;
+            });
+    }
 
     function submitNewRecord() {
         const category = document.getElementById("category").value;
@@ -725,6 +803,7 @@
             document.getElementById("addModal").style.display = "none";
             document.getElementById("editModal").style.display = "none";
             document.getElementById("chartModal").style.display = "none";
+            document.getElementById("usersModal").style.display = "none";
         }
     }
 </script>

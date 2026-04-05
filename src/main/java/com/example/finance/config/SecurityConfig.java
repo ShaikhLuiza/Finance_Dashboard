@@ -4,11 +4,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.core.session.SessionRegistry;
+import org.springframework.security.core.session.SessionRegistryImpl;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.provisioning.InMemoryUserDetailsManager;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.session.HttpSessionEventPublisher;
 
 @Configuration
 @EnableWebSecurity
@@ -23,11 +26,14 @@ public class SecurityConfig {
                         .requestMatchers("/").permitAll()
                         .requestMatchers("/h2-console/**").permitAll()
 
-                        // NEW: Whitelisted the dashboard URL!
                         .requestMatchers("/dashboard").hasAnyRole("VIEWER", "ANALYST", "ADMIN")
 
                         .requestMatchers("/api/finance/records").hasAnyRole("VIEWER", "ANALYST", "ADMIN")
                         .requestMatchers("/api/finance/summary").hasAnyRole("ANALYST", "ADMIN")
+
+                        // 🆕 Added role restriction for the active viewers list
+                        .requestMatchers("/api/finance/active-users").hasRole("ADMIN")
+
                         .requestMatchers("/api/finance/records/**").hasRole("ADMIN")
                         .requestMatchers("/api/users/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
@@ -35,15 +41,39 @@ public class SecurityConfig {
                 .headers(headers -> headers
                         .frameOptions(frame -> frame.sameOrigin())
                 )
-                // FIXED: Changed from withDefaults() to explicit success routing
                 .formLogin(form -> form
                         .loginPage("/login")
                         .defaultSuccessUrl("/dashboard", true)
                         .permitAll()
                 )
-                .logout(logout -> logout.logoutSuccessUrl("/"));
+                .logout(logout -> logout
+                        .logoutUrl("/logout") // Specifies the logout trigger URL
+                        .logoutSuccessUrl("/") // Redirects to home or login page after logout
+                        .invalidateHttpSession(true) // 🆕 Destroys the HTTP session
+                        .clearAuthentication(true) // 🆕 Clears the security context
+                        .deleteCookies("JSESSIONID") // 🆕 Wipes the session cookie
+                        .permitAll()
+                )
+
+                // 🆕 Added session management to hook up the session registry
+                .sessionManagement(session -> session
+                        .maximumSessions(1)
+                        .sessionRegistry(sessionRegistry())
+                );
 
         return http.build();
+    }
+
+    // 🆕 Keeps track of active sessions
+    @Bean
+    public SessionRegistry sessionRegistry() {
+        return new SessionRegistryImpl();
+    }
+
+    // 🆕 Broadcasts login/logout events to destroy or create sessions
+    @Bean
+    public HttpSessionEventPublisher httpSessionEventPublisher() {
+        return new HttpSessionEventPublisher();
     }
 
     @Bean
