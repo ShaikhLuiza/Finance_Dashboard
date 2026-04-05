@@ -7,7 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,12 +40,6 @@ public class FinanceService {
         return repository.save(existing);
     }
 
-    // --- ANALYTICS ---
-    public List<Map<String, Object>> getExpenseTotalsByCategory() {
-        // Changed this to use 'repository' so it matches your Autowired variable!
-        return repository.findExpenseTotalsByCategory();
-    }
-
     public void deleteRecord(Long id) {
         repository.deleteById(id);
     }
@@ -56,7 +49,17 @@ public class FinanceService {
         return repository.findByCategory(category);
     }
 
-    // --- DASHBOARD SUMMARY LOGIC (Requirement #3) ---
+    // --- ANALYTICS ---
+    public List<Map<String, Object>> getExpenseTotalsByCategory() {
+        return repository.findExpenseTotalsByCategory();
+    }
+
+    // 🆕 Fetch monthly trends from repo
+    public List<Map<String, Object>> getMonthlyTrends() {
+        return repository.getMonthlyTrends();
+    }
+
+    // --- DASHBOARD SUMMARY LOGIC ---
     public Map<String, Object> getDashboardSummary() {
         List<FinancialRecord> records = repository.findAll();
 
@@ -79,12 +82,16 @@ public class FinanceService {
                         Collectors.mapping(FinancialRecord::getAmount, Collectors.reducing(BigDecimal.ZERO, BigDecimal::add))
                 ));
 
+        // 🆕 4. Recent Activity (Grabbing top 5 from our custom repo query)
+        List<FinancialRecord> recentActivity = repository.findTop5ByOrderByIdDesc();
+
         // Package everything neatly into a Map to send to the frontend
         Map<String, Object> summary = new HashMap<>();
         summary.put("totalIncome", totalIncome);
         summary.put("totalExpenses", totalExpense);
         summary.put("netBalance", totalIncome.subtract(totalExpense));
         summary.put("categoryWiseTotals", categoryTotals);
+        summary.put("recentActivity", recentActivity);
 
         return summary;
     }

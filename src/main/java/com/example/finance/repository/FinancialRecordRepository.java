@@ -26,7 +26,13 @@ public interface FinancialRecordRepository extends JpaRepository<FinancialRecord
     List<FinancialRecord> findByTypeAndDateBetween(TransactionType type, LocalDate startDate, LocalDate endDate);
 
     // 5. Custom query to sum up expenses grouped by category for analytics
-    // Using Map<String, Object> allows us to bypass creating a separate DTO file!
     @Query("SELECT r.category as category, SUM(r.amount) as total FROM FinancialRecord r WHERE r.type = 'EXPENSE' GROUP BY r.category")
     List<Map<String, Object>> findExpenseTotalsByCategory();
+
+    // 🆕 6. Grab the 5 most recent activities based on the record's ID
+    List<FinancialRecord> findTop5ByOrderByIdDesc();
+
+    // 🆕 7. Monthly trends query (H2 Database compatible. If using MySQL, change FORMATDATETIME to DATE_FORMAT)
+    @Query(value = "SELECT FORMATDATETIME(date, 'yyyy-MM') as month, type as type, SUM(amount) as total FROM financial_records GROUP BY month, type ORDER BY month ASC", nativeQuery = true)
+    List<Map<String, Object>> getMonthlyTrends();
 }

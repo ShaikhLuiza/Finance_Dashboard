@@ -19,7 +19,6 @@ public class FinanceController {
     @Autowired
     private FinanceService financeService;
 
-    // 🆕 Inject the SessionRegistry from SecurityConfig
     @Autowired
     private SessionRegistry sessionRegistry;
 
@@ -66,20 +65,25 @@ public class FinanceController {
         return ResponseEntity.ok(financeService.getExpenseTotalsByCategory());
     }
 
-    // 7. Get the math summaries
+    // 🆕 7. Get Monthly Trends for line/bar charts
+    @GetMapping("/analytics/trends")
+    public ResponseEntity<List<Map<String, Object>>> getTrends() {
+        return ResponseEntity.ok(financeService.getMonthlyTrends());
+    }
+
+    // 8. Get the math summaries (Includes Recent Activity)
     @GetMapping("/summary")
     public ResponseEntity<Map<String, Object>> getSummary() {
         return ResponseEntity.ok(financeService.getDashboardSummary());
     }
 
-    // 🆕 8. Get active users currently logged into the system
+    // 9. Get active users currently logged into the system
     @GetMapping("/active-users")
     public ResponseEntity<List<String>> getActiveUsers() {
         List<String> activeUsers = sessionRegistry.getAllPrincipals().stream()
                 .filter(principal -> principal instanceof User)
                 .map(principal -> {
                     User user = (User) principal;
-                    // Formats as: "admin (ROLE_ADMIN)" or "viewer (ROLE_VIEWER)"
                     return user.getUsername() + " (" + user.getAuthorities().toString().replaceAll("[\\[\\]]", "") + ")";
                 })
                 .collect(Collectors.toList());
