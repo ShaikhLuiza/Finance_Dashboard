@@ -464,6 +464,9 @@
                 <option value="INCOME">INCOME</option>
                 <option value="EXPENSE">EXPENSE</option>
             </select>
+
+            <label for="dateFilter" style="margin-left: 15px;">Date:</label>
+            <input type="date" id="dateFilter" class="filter-dropdown" onchange="filterTable()">
         </div>
     </div>
 
@@ -474,6 +477,7 @@
             <th>Category</th>
             <th>Type</th>
             <th>Amount</th>
+            <th>Date</th>
             <th sec:authorize="hasRole('ADMIN')">Actions</th>
         </tr>
         </thead>
@@ -488,6 +492,8 @@
             </td>
 
             <td th:text="${'$' + record.amount}" style="font-family: monospace; font-weight: 600; font-size: 1rem;">$0.00</td>
+
+            <td th:text="${record.date}" class="date-cell" style="font-weight: 600; color: var(--text-muted);">YYYY-MM-DD</td>
 
             <td sec:authorize="hasRole('ADMIN')">
                 <button class="row-btn btn-edit"
@@ -614,9 +620,11 @@
         });
     }
 
+    // 🆕 Updated filter logic to include Date
     function filterTable() {
         const selectedCategory = document.getElementById("categoryFilter").value;
         const selectedType = document.getElementById("typeFilter").value;
+        const selectedDate = document.getElementById("dateFilter").value;
 
         const rows = document.querySelectorAll("#ledgerTable tbody tr");
 
@@ -627,10 +635,14 @@
             const typeCell = row.querySelector(".type-cell");
             const typeText = typeCell ? typeCell.innerText.trim() : "";
 
+            const dateCell = row.querySelector(".date-cell");
+            const dateText = dateCell ? dateCell.innerText.trim() : "";
+
             const categoryMatches = (selectedCategory === "all" || categoryText === selectedCategory);
             const typeMatches = (selectedType === "all" || typeText === selectedType);
+            const dateMatches = (selectedDate === "" || dateText === selectedDate);
 
-            if (categoryMatches && typeMatches) {
+            if (categoryMatches && typeMatches && dateMatches) {
                 row.style.display = "";
             } else {
                 row.style.display = "none";
@@ -652,7 +664,6 @@
     function openAddModal() { document.getElementById("addModal").style.display = "flex"; }
     function closeAddModal() { document.getElementById("addModal").style.display = "none"; }
 
-    // 🆕 ACTIVE USERS MODAL FUNCTIONS
     function openUsersModal() {
         document.getElementById("usersModal").style.display = "flex";
         fetchActiveUsers();
