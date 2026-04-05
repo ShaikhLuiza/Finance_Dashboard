@@ -74,7 +74,7 @@ src/main/resources/templates/
 ├── login.html                        # Role-based login terminal
 └── dashboard.html                    # The secure interactive analytics dashboard
 
-
+---
 ## Setup and Installation
 
 Prerequisites
