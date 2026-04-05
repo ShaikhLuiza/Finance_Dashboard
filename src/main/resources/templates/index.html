@@ -3,56 +3,244 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Finance Dashboard - Select User</title>
+    <title>Finance Dashboard - Secure Access</title>
     <style>
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f4f7f6;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
+        :root {
+            --primary: #1e293b;
+            --accent: #2563eb;
+            --text-main: #0f172a;
+            --text-muted: #64748b;
+            --border-color: #e2e8f0;
+            --bg-light: #f8fafc;
         }
-        .container {
-            background: white;
-            padding: 2.5rem;
-            border-radius: 12px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            text-align: center;
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            height: 100vh;
+            background-color: var(--bg-light);
+        }
+
+        /* 🌓 LEFT SIDE: IMMERSIVE BRAND PANEL */
+        .brand-panel {
+            flex: 1.2;
+            background-color: var(--primary);
+            background-image:
+                radial-gradient(at 0% 0%, rgba(37, 99, 235, 0.25) 0, transparent 60%),
+                radial-gradient(at 100% 100%, rgba(15, 23, 42, 0.8) 0, transparent 70%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 3.5rem;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        /* Decorative Grid Background for a technical feel */
+        .brand-panel::before {
+            content: '';
+            position: absolute;
+            inset: 0;
+            opacity: 0.05;
+            background-image: linear-gradient(#fff 1px, transparent 1px), linear-gradient(to right, #fff 1px, transparent 1px);
+            background-size: 30px 30px;
+        }
+
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 1.25rem;
+            letter-spacing: -0.025em;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 💎 PURE CSS LOGO */
+        .custom-logo {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 900;
+            font-size: 1.1rem;
+            color: white;
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .hero-text h2 {
+            font-size: 2.5rem;
+            font-weight: 800;
+            margin-bottom: 1rem;
+            line-height: 1.2;
+            letter-spacing: -0.05em;
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-text p {
+            font-size: 1.1rem;
+            color: #94a3b8;
+            max-width: 460px;
+            line-height: 1.6;
+            position: relative;
+            z-index: 2;
+        }
+
+        .footer-text {
+            font-size: 0.85rem;
+            color: #64748b;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* 👉 RIGHT SIDE: LOGIN ACTIONS */
+        .login-panel {
+            flex: 1;
+            background-color: #ffffff;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 5rem;
+            border-left: 1px solid var(--border-color);
+        }
+
+        .login-wrapper {
             max-width: 400px;
             width: 100%;
+            margin: 0 auto;
         }
-        h1 { color: #333; margin-bottom: 0.5rem; }
-        p { color: #666; margin-bottom: 2rem; }
-        .btn {
-            display: block;
+
+        .login-wrapper h1 {
+            color: var(--text-main);
+            font-size: 1.85rem;
+            font-weight: 700;
+            letter-spacing: -0.03em;
+            margin-bottom: 0.5rem;
+        }
+
+        .login-wrapper p {
+            color: var(--text-muted);
+            font-size: 0.95rem;
+            margin-bottom: 2.5rem;
+        }
+
+        /* 🔘 ENTERPRISE ROLE BUTTONS */
+        .role-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
             width: 100%;
-            padding: 12px;
-            margin: 10px 0;
-            border: none;
-            border-radius: 6px;
-            font-size: 1rem;
-            font-weight: bold;
-            cursor: pointer;
+            padding: 16px 20px;
+            margin-bottom: 12px;
+            background-color: #fff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
             text-decoration: none;
-            transition: background 0.2s;
+            color: var(--text-main);
+            font-weight: 600;
+            font-size: 0.95rem;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .btn-viewer { background-color: #6c757d; color: white; }
-        .btn-analyst { background-color: #17a2b8; color: white; }
-        .btn-admin { background-color: #28a745; color: white; }
-        .btn:hover { opacity: 0.9; }
+
+        .role-btn:hover {
+            border-color: var(--accent);
+            background-color: #f8fafc;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+        }
+
+        .role-btn:active {
+            transform: translateY(0);
+        }
+
+        .btn-desc {
+            display: block;
+            font-size: 0.8rem;
+            color: var(--text-muted);
+            font-weight: 400;
+            margin-top: 2px;
+        }
+
+        /* Modern Arrow Indicator */
+        .arrow-icon {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: transform 0.2s;
+        }
+
+        .role-btn:hover .arrow-icon {
+            color: var(--accent);
+            transform: translateX(4px);
+        }
+
+        /* Mobile Responsive handling */
+        @media (max-width: 850px) {
+            body { flex-direction: column; }
+            .brand-panel { flex: 0.6; padding: 2rem; }
+            .hero-text h2 { font-size: 1.8rem; }
+            .login-panel { padding: 3rem 2rem; }
+        }
     </style>
 </head>
 <body>
 
-<div class="container">
-    <h1>Welcome!</h1>
-    <p>Please select your user role to log in:</p>
+<div class="brand-panel">
+    <div class="logo-area">
+        <div class="custom-logo">F</div>
+        <span>PulseFinance</span>
+    </div>
 
-    <a href="/dashboard" class="btn btn-viewer">Login as Viewer</a>
-    <a href="/dashboard" class="btn btn-analyst">Login as Analyst</a>
-    <a href="/dashboard" class="btn btn-admin">Login as Admin</a>
+    <div class="hero-text">
+        <h2>Track operations. Optimize capital.</h2>
+        <p>Access your organization's financial ecosystem. Monitor records, process summaries, and generate advanced ledger analysis instantly.</p>
+    </div>
+
+    <div class="footer-text">
+        © 2026 PulseFinance Enterprise. All rights reserved.
+    </div>
+</div>
+
+<div class="login-panel">
+    <div class="login-wrapper">
+        <h1>Identity Verification</h1>
+        <p>Please select your authorized access clearance level:</p>
+
+        <a href="/dashboard" class="role-btn">
+            <div>
+                <span>System Viewer</span>
+                <span class="btn-desc">Read-only auditing and basic record viewing</span>
+            </div>
+            <span class="arrow-icon">→</span>
+        </a>
+
+        <a href="/dashboard" class="role-btn">
+            <div>
+                <span>Financial Analyst</span>
+                <span class="btn-desc">Unrestricted access to DB metrics & analytics</span>
+            </div>
+            <span class="arrow-icon">→</span>
+        </a>
+
+        <a href="/dashboard" class="role-btn">
+            <div>
+                <span>Super Administrator</span>
+                <span class="btn-desc">Full CRUD operations and management rights</span>
+            </div>
+            <span class="arrow-icon">→</span>
+        </a>
+    </div>
 </div>
 
 </body>
