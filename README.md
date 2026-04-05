@@ -36,42 +36,7 @@ A full-stack Finance Dashboard system featuring a robust Spring Boot backend and
 
 ---
 
-## Project Structure
 
-```text
-src/main/java/com/example/finance/
-│
-├── config/
-│   └── SecurityConfig.java            # Spring Security and access control rules
-│
-├── controller/
-│   ├── FinanceController.java        # Handles financial CRUD and summary endpoints
-│   ├── UserController.java           # Manages user accounts and status operations
-│   ├── ViewController.java           # Serves HTML pages (Dashboard, Index, Login)
-│   └── GlobalExceptionHandler.java   # Centralized error mapping and handling
-│
-├── model/
-│   ├── FinancialRecord.java          # DB Entity for ledger entries
-│   ├── User.java                     # DB Entity for system operators
-│   ├── Role.java                     # Enum or class declaring access levels
-│   ├── TransactionType.java          # Enum declaring INCOME / EXPENSE
-│   └── CategoryTotal.java            # Interface mapping for custom aggregated queries
-│
-├── repository/
-│   ├── FinancialRecordRepository.java # Aggregation queries for financial metrics
-│   └── UserRepository.java            # Database operations for user records
-│
-├── service/
-│   ├── FinanceService.java           # Core algorithms and analytics computation
-│   └── UserService.java              # Logic for role assignment and active tracking
-│
-└── FinanceApplication.java           # Application entry point
-
-src/main/resources/templates/
-│
-├── index.html                        # Public landing page
-├── login.html                        # Role-based login terminal
-└── dashboard.html                    # The secure interactive analytics dashboard
 
 ## Setup and Installation
 
