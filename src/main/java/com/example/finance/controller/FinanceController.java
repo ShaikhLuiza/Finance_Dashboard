@@ -64,4 +64,5 @@ public class FinanceController {
     public ResponseEntity<Map<String, Object>> getSummary() {
         return ResponseEntity.ok(financeService.getDashboardSummary());
     }
+
 }

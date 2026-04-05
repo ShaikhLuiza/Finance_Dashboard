@@ -199,9 +199,6 @@
             margin-bottom: 10px;
             color: var(--primary);
         }
-        .full-width {
-            grid-column: 1 / span 2;
-        }
     </style>
 </head>
 <body>
@@ -330,13 +327,6 @@
                     <canvas id="categoryChart"></canvas>
                 </div>
             </div>
-
-            <div class="chart-box full-width">
-                <h4>6-Month Cash Flow Trend</h4>
-                <div style="height: 200px;">
-                    <canvas id="trendChart"></canvas>
-                </div>
-            </div>
         </div>
     </div>
 </div>
@@ -461,7 +451,6 @@
     // 📈 MULTI-CHART LOGIC
     let myChart = null;
     let categoryChart = null;
-    let trendChart = null;
 
     function openChartModal() {
         const modal = document.getElementById("chartModal");
@@ -491,7 +480,6 @@
         fetch('/api/finance/analytics/category')
             .then(response => response.json())
             .then(data => {
-                // Extracts categories and totals dynamically from your backend!
                 const labels = data.map(item => item.CATEGORY || item.category);
                 const amounts = data.map(item => item.TOTAL || item.total);
 
@@ -500,10 +488,10 @@
                 categoryChart = new Chart(ctx2, {
                     type: 'bar',
                     data: {
-                        labels: labels, // Real categories from DB!
+                        labels: labels,
                         datasets: [{
                             label: 'Expenses ($)',
-                            data: amounts, // Real amounts from DB!
+                            data: amounts,
                             backgroundColor: '#3498db',
                             borderWidth: 1
                         }]
@@ -514,36 +502,6 @@
                 });
             })
             .catch(error => console.error("Error loading categories:", error));
-
-        // --- 3. Line Chart (Still using dummy data for now) ---
-        if (trendChart !== null) trendChart.destroy();
-        const ctx3 = document.getElementById('trendChart').getContext('2d');
-        trendChart = new Chart(ctx3, {
-            type: 'line',
-            data: {
-                labels: ['Nov', 'Dec', 'Jan', 'Feb', 'Mar', 'Apr'],
-                datasets: [
-                    {
-                        label: 'Income',
-                        data: [4000, 4000, 4500, 4200, 4500, 4800],
-                        borderColor: '#2ecc71',
-                        fill: false,
-                        tension: 0.1
-                    },
-                    {
-                        label: 'Expenses',
-                        data: [3100, 3500, 3000, 3200, 2800, 2900],
-                        borderColor: '#e74c3c',
-                        fill: false,
-                        tension: 0.1
-                    }
-                ]
-            },
-            options: {
-                maintainAspectRatio: false,
-                scales: { y: { beginAtZero: true } }
-            }
-        });
     }
 
     function closeChartModal() { document.getElementById("chartModal").style.display = "none"; }
