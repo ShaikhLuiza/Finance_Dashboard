@@ -68,12 +68,17 @@ Steps to Run
    
 3. Access the application:
    Open your browser and navigate to http://localhost:8080
+### 🔑 Mock Credentials
 
-Mock Credentials
-To evaluate the access control gates, the system is pre-configured with the following local users:
-- Admin: admin / admin123
-- Analyst: analyst / analyst123
-- Viewer: viewer / viewer123
+To evaluate the access control gates, the system is pre-configured with the following local users. Use these exact combinations to log in and test role behaviors:
+
+| Role | Username | Password |
+| :--- | :--- | :--- |
+| **Admin** | `admin` | `Admin-Secure-99!` |
+| **Analyst** | `analyst` | `Read-Data-Trend-88` |
+| **Viewer** | `viewer` | `View-Only-Pass-00` |
+
+*(Note: Passwords are case-sensitive and must be entered exactly as shown above.)*
 
 ---
 
