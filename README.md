@@ -34,9 +34,6 @@ A full-stack Finance Dashboard system featuring a robust Spring Boot backend and
 
 ---
 
----
----
-
 ## Project Structure
 
 ```text
@@ -73,8 +70,10 @@ src/main/resources/templates/
 ├── index.html                        # Public landing page
 ├── login.html                        # Role-based login terminal
 └── dashboard.html                    # The secure interactive analytics dashboard
+```
 
 ---
+
 ## Setup and Installation
 
 Prerequisites
@@ -83,16 +82,17 @@ Prerequisites
 
 Steps to Run
 1. Clone the repository:
-   (Note: Remember to replace YOUR_USERNAME and YOUR_REPOSITORY_NAME with your actual GitHub details!)
+   *(Note: Remember to replace YOUR_USERNAME and YOUR_REPOSITORY_NAME with your actual GitHub details!)*
    
-   git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git
-   cd YOUR_REPOSITORY_NAME
+   `git clone https://github.com/YOUR_USERNAME/YOUR_REPOSITORY_NAME.git`
+   `cd YOUR_REPOSITORY_NAME`
    
 2. Run the application:
-   ./mvnw spring-boot:run
+   `./mvnw spring-boot:run`
    
 3. Access the application:
-   Open your browser and navigate to http://localhost:8080
+   Open your browser and navigate to `http://localhost:8080`
+
 ### 🔑 Mock Credentials
 
 To evaluate the access control gates, the system is pre-configured with the following local users. Use these exact combinations to log in and test role behaviors:
@@ -129,3 +129,5 @@ Metrics and Analytics
 2. Thymeleaf + Security Taglibs: Instead of separating the stack into a rigid Node backend and standalone React build, Thymeleaf was used. This directly allowed passing server-side security evaluations like sec:authorize="hasRole('...)" to safely omit dashboard components straight from the initial fetch.
 
 3. The Viewer UI Experience: Per security standards, rather than showing empty grid components on the layout for restricted users, standard VIEWERS are given a modified Full-Width table layout. Grid column modifications are dictated dynamically through authorized server expressions.
+
+***
