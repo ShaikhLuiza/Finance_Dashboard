@@ -9,8 +9,8 @@
 
     <style>
         :root {
-            --primary: #1e293b;       /* Premium slate from login */
-            --accent: #2563eb;        /* Ocean blue from login */
+            --primary: #1e293b;       /* Premium slate */
+            --accent: #2563eb;        /* Ocean blue */
             --success: #059669;       /* Polished green */
             --danger: #dc2626;        /* Polished red */
             --warning: #d97706;       /* Polished amber */
@@ -48,7 +48,6 @@
             letter-spacing: -0.025em;
         }
 
-        /* Pure CSS logo to match login */
         .custom-logo {
             width: 28px;
             height: 28px;
@@ -136,6 +135,43 @@
 
         .btn-analysis { background-color: var(--primary); }
         .btn-analysis:hover { background-color: #0f172a; }
+
+        /* 🔍 FILTER SECTION STYLING */
+        .table-controls {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .filter-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .filter-group label {
+            font-weight: 600;
+            font-size: 0.9rem;
+            color: var(--text-main);
+        }
+
+        .filter-dropdown {
+            padding: 8px 12px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            background-color: white;
+            font-size: 0.9rem;
+            color: var(--text-main);
+            outline: none;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .filter-dropdown:focus {
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
 
         /* 📊 TABLE STYLING */
         .data-table {
@@ -379,7 +415,24 @@
         </div>
     </div>
 
-    <table class="data-table">
+    <div class="table-controls">
+        <div style="font-weight: 700; font-size: 1.1rem; color: var(--text-main);">Active Ledgers</div>
+        <div class="filter-group">
+            <label for="categoryFilter">Category:</label>
+            <select id="categoryFilter" class="filter-dropdown" onchange="filterTable()">
+                <option value="all">All Categories</option>
+            </select>
+
+            <label for="typeFilter" style="margin-left: 15px;">Type:</label>
+            <select id="typeFilter" class="filter-dropdown" onchange="filterTable()">
+                <option value="all">All Types</option>
+                <option value="INCOME">INCOME</option>
+                <option value="EXPENSE">EXPENSE</option>
+            </select>
+        </div>
+    </div>
+
+    <table class="data-table" id="ledgerTable">
         <thead>
         <tr>
             <th>ID</th>
@@ -392,11 +445,13 @@
         <tbody>
         <tr th:each="record : ${records}">
             <td th:text="${record.id}" style="font-weight: 600; color: var(--text-muted);">#</td>
-            <td th:text="${record.category}" style="font-weight: 600;">Category</td>
-            <td>
+            <td th:text="${record.category}" class="category-cell" style="font-weight: 600;">Category</td>
+
+            <td class="type-cell">
                 <span th:if="${record.type.toString() == 'INCOME'}" class="badge badge-income">INCOME</span>
                 <span th:if="${record.type.toString() == 'EXPENSE'}" class="badge badge-expense">EXPENSE</span>
             </td>
+
             <td th:text="${'$' + record.amount}" style="font-family: monospace; font-weight: 600; font-size: 1rem;">$0.00</td>
 
             <td sec:authorize="hasRole('ADMIN')">
@@ -490,7 +545,52 @@
 </div>
 
 <script>
-    // [Script tags remain identical to preserve data operations]
+    // JS TO POPULATE AND EXECUTE FILTERING
+    document.addEventListener("DOMContentLoaded", function() {
+        populateFilterDropdown();
+    });
+
+    function populateFilterDropdown() {
+        const dropdown = document.getElementById("categoryFilter");
+        const categoryCells = document.querySelectorAll(".category-cell");
+
+        let categories = new Set();
+        categoryCells.forEach(cell => {
+            categories.add(cell.innerText.trim());
+        });
+
+        categories.forEach(category => {
+            let option = document.createElement("option");
+            option.value = category;
+            option.innerText = category;
+            dropdown.appendChild(option);
+        });
+    }
+
+    function filterTable() {
+        const selectedCategory = document.getElementById("categoryFilter").value;
+        const selectedType = document.getElementById("typeFilter").value;
+
+        const rows = document.querySelectorAll("#ledgerTable tbody tr");
+
+        rows.forEach(row => {
+            const categoryCell = row.querySelector(".category-cell");
+            const categoryText = categoryCell ? categoryCell.innerText.trim() : "";
+
+            const typeCell = row.querySelector(".type-cell");
+            const typeText = typeCell ? typeCell.innerText.trim() : "";
+
+            const categoryMatches = (selectedCategory === "all" || categoryText === selectedCategory);
+            const typeMatches = (selectedType === "all" || typeText === selectedType);
+
+            if (categoryMatches && typeMatches) {
+                row.style.display = "";
+            } else {
+                row.style.display = "none";
+            }
+        });
+    }
+
     function deleteRecord(id) {
         if (confirm("Are you sure you want to delete record #" + id + "?")) {
             fetch('/api/finance/records/' + id, { method: 'DELETE' })
@@ -521,10 +621,17 @@
             body: JSON.stringify(payload)
         })
         .then(response => {
-            if (response.ok) { window.location.reload(); }
-            else { alert("Failed to add record."); }
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Action failed. Check your console or credentials.");
+                closeAddModal();
+            }
         })
-        .catch(error => alert("Error: " + error.message));
+        .catch(error => {
+            alert("Error: " + error.message);
+            closeAddModal();
+        });
     }
 
     function triggerEditModal(buttonElement) {
@@ -561,10 +668,17 @@
             body: JSON.stringify(payload)
         })
         .then(response => {
-            if (response.ok) { window.location.reload(); }
-            else { alert("Failed to update record."); }
+            if (response.ok) {
+                window.location.reload();
+            } else {
+                alert("Action failed. Check your console or credentials.");
+                closeEditModal();
+            }
         })
-        .catch(error => alert("Error: " + error.message));
+        .catch(error => {
+            alert("Error: " + error.message);
+            closeEditModal();
+        });
     }
 
     let myChart = null;
